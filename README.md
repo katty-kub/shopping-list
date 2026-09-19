@@ -1,10 +1,8 @@
 # 🛒 Nákupní seznam
 
-Jednoduchá webová aplikace pro vytváření nákupního seznamu. Projekt je vytvořený pomocí **Reactu, TypeScriptu a Vite**.
+[![Automatizované testy](https://github.com/katty-kub/shopping-list/actions/workflows/playwright.yml/badge.svg)](https://github.com/katty-kub/shopping-list/actions/workflows/playwright.yml)
 
-Uživatel může přidávat položky, vybírat jejich kategorii, označit je jako koupené a následně je ze seznamu odstranit.
-
----
+Webová aplikace pro vytváření nákupního seznamu vytvořená pomocí Reactu a TypeScriptu. Projekt obsahuje komponentové i end-to-end automatizované testy.
 
 ## ✨ Funkce aplikace
 
@@ -12,325 +10,152 @@ Uživatel může přidávat položky, vybírat jejich kategorii, označit je jak
 - přidání položky klávesou Enter
 - výběr kategorie
 - označení položky jako koupené
-- přeškrtnutí koupené položky
 - odstranění položky
 - zobrazení celkového počtu položek
-- zobrazení prázdného stavu
-- responzivní design pro mobilní zařízení
-
----
-
-## 🗂️ Kategorie
-
-Položku je možné zařadit do jedné ze tří kategorií:
-
-- Potraviny
-- Drogerie
-- Domácnost
-
-Kategorie jsou definované pomocí TypeScriptového typu:
-
-```ts
-export type Category =
-  | "Potraviny"
-  | "Drogerie"
-  | "Domácnost";
-```
-
-Díky tomu TypeScript nedovolí použít neplatnou kategorii.
-
----
+- validace prázdného vstupu
+- ukládání seznamu do `localStorage`
+- responzivní design
 
 ## 🛠️ Použité technologie
 
 - React
 - TypeScript
 - Vite
-- HTML
-- CSS
-- React Hooks
-- responzivní design
+- HTML a CSS
+- Vitest
+- React Testing Library
+- Playwright
+- GitHub Actions
 
----
+## 🧪 Automatizované testování
+
+Projekt obsahuje dvě úrovně automatizovaných testů:
+
+| Druh testů | Nástroje | Počet |
+|---|---|---:|
+| Komponentové testy | Vitest + React Testing Library | 13 |
+| E2E testy | Playwright + Chromium | 6 |
+
+### E2E scénáře
+
+Playwright ověřuje:
+
+1. zobrazení prázdného nákupního seznamu
+2. přidání nové položky
+3. zamítnutí prázdné položky
+4. uložení položky do vybrané kategorie
+5. označení položky jako koupené
+6. odstranění položky a aktualizaci počítadla
+
+Testy používají lokátory podle přístupnostních rolí a simulují skutečné uživatelské chování v prohlížeči.
+
+## 🚀 Spuštění projektu
+
+```bash
+git clone https://github.com/katty-kub/shopping-list.git
+cd shopping-list
+npm install
+npm run dev
+```
+
+Aplikace bude dostupná na:
+
+```text
+http://localhost:5173
+```
+
+## Spuštění testů
+
+### Komponentové testy
+
+```bash
+npm test
+```
+
+### E2E testy
+
+Při prvním spuštění je potřeba nainstalovat Chromium:
+
+```bash
+npx playwright install chromium
+```
+
+Potom lze testy spustit příkazem:
+
+```bash
+npm run test:e2e
+```
+
+### Interaktivní režim Playwright
+
+```bash
+npm run test:e2e:ui
+```
+
+### HTML report
+
+```bash
+npm run test:e2e:report
+```
+
+## Další kontroly projektu
+
+```bash
+npm run lint
+npm run build
+```
+
+## ⚙️ Continuous Integration
+
+GitHub Actions po každém pushi nebo pull requestu do větve `main` automaticky spustí:
+
+- ESLint
+- komponentové testy
+- produkční build
+- E2E testy v Chromiu
+- vytvoření Playwright HTML reportu
 
 ## 📁 Struktura projektu
 
 ```text
 shopping-list/
+├── .github/
+│   └── workflows/
+│       └── playwright.yml
+├── e2e/
+│   └── shopping-list.spec.ts
 ├── src/
 │   ├── components/
-│   │   ├── AddItemForm.tsx
-│   │   └── ShoppingItem.tsx
+│   ├── test/
 │   ├── types/
-│   │   └── index.ts
-│   ├── App.css
-│   ├── App.tsx
-│   ├── index.css
-│   └── main.tsx
-├── index.html
+│   ├── App.test.tsx
+│   └── App.tsx
+├── playwright.config.ts
 ├── package.json
-├── tsconfig.json
+├── vite.config.ts
 └── README.md
 ```
 
----
-
-## 🧩 Komponenty
-
-### `App.tsx`
-
-Hlavní komponenta aplikace.
-
-Obsahuje:
-
-- stav nákupních položek
-- stav názvu nové položky
-- stav vybrané kategorie
-- funkci pro přidání položky
-- funkci pro označení položky jako koupené
-- funkci pro odstranění položky
-
-```tsx
-const [items, setItems] =
-  useState<ShoppingItemType[]>([]);
-
-const [name, setName] = useState("");
-
-const [category, setCategory] =
-  useState<Category>("Potraviny");
-```
-
----
-
-### `AddItemForm.tsx`
-
-Komponenta formuláře pro přidávání položek.
-
-Obsahuje:
-
-- textový input
-- výběr kategorie
-- tlačítko Přidat
-- obsluhu odeslání formuláře
-
-Formulář je možné odeslat kliknutím na tlačítko nebo stisknutím klávesy Enter.
-
-```tsx
-const handleSubmit = (
-  event: FormEvent<HTMLFormElement>
-) => {
-  event.preventDefault();
-  onAdd();
-};
-```
-
----
-
-### `ShoppingItem.tsx`
-
-Komponenta zobrazující jednu položku nákupního seznamu.
-
-Obsahuje:
-
-- checkbox
-- název položky
-- kategorii
-- tlačítko pro odstranění
-
-Komponenta dostává data a funkce prostřednictvím props.
-
-```tsx
-interface ShoppingItemProps {
-  item: ShoppingItemType;
-  onToggle: (id: string) => void;
-  onRemove: (id: string) => void;
-}
-```
-
----
-
-## 🧠 Datový typ položky
-
-Každá položka odpovídá rozhraní `ShoppingItem`:
-
-```ts
-export interface ShoppingItem {
-  id: string;
-  name: string;
-  category: Category;
-  quantity: number;
-  bought: boolean;
-}
-```
-
-### Význam vlastností
-
-| Vlastnost | Typ | Význam |
-|---|---|---|
-| `id` | `string` | Jedinečný identifikátor položky |
-| `name` | `string` | Název položky |
-| `category` | `Category` | Kategorie položky |
-| `quantity` | `number` | Počet kusů |
-| `bought` | `boolean` | Informace, zda je položka koupená |
-
----
-
-## 🚀 Spuštění projektu
-
-### 1. Naklonování repozitáře
-
-```bash
-git clone URL_REPOZITARE
-```
-
-### 2. Přechod do složky projektu
-
-```bash
-cd shopping-list
-```
-
-### 3. Instalace balíčků
-
-```bash
-npm install
-```
-
-### 4. Spuštění vývojového serveru
-
-```bash
-npm run dev
-```
-
-Aplikace se obvykle otevře na adrese:
-
-```text
-http://localhost:5173/
-```
-
----
-
-## 📦 Vytvoření produkční verze
-
-```bash
-npm run build
-```
-
-Hotové soubory se vytvoří ve složce:
-
-```text
-dist/
-```
-
-Náhled produkční verze lze spustit příkazem:
-
-```bash
-npm run preview
-```
-
----
-
-## 🔄 Jak aplikace funguje
-
-### Přidání položky
-
-Po odeslání formuláře se vytvoří nový objekt:
-
-```tsx
-const newItem: ShoppingItemType = {
-  id: Date.now().toString(),
-  name: trimmedName,
-  category,
-  quantity: 1,
-  bought: false,
-};
-```
-
-Nový objekt se přidá do pole pomocí spread operátoru:
-
-```tsx
-setItems((currentItems) => [
-  ...currentItems,
-  newItem,
-]);
-```
-
----
-
-### Označení položky jako koupené
-
-Metoda `map()` projde všechny položky.
-
-U položky se správným `id` změní hodnotu `bought`:
-
-```tsx
-const toggleItem = (id: string) => {
-  setItems((currentItems) =>
-    currentItems.map((item) =>
-      item.id === id
-        ? {
-            ...item,
-            bought: !item.bought,
-          }
-        : item
-    )
-  );
-};
-```
-
----
-
-### Odstranění položky
-
-Metoda `filter()` vytvoří nové pole bez položky, která má zadané `id`:
-
-```tsx
-const removeItem = (id: string) => {
-  setItems((currentItems) =>
-    currentItems.filter(
-      (item) => item.id !== id
-    )
-  );
-};
-```
-
----
-
-## 📚 Co jsem si na projektu procvičila
-
-- vytváření React komponent
-- rozdělení aplikace do souborů
-- props
-- TypeScript interface
-- vlastní TypeScript typy
-- `useState`
-- formuláře v Reactu
-- controlled inputs
-- události `onChange`, `onSubmit` a `onClick`
-- `event.preventDefault()`
-- vykreslování seznamu pomocí `map()`
-- změnu položek pomocí `map()`
-- mazání položek pomocí `filter()`
-- podmíněné vykreslování
-- podmíněné CSS třídy
-- responzivní CSS
-
----
+## 📚 Co jsem si procvičila
+
+- tvorbu React komponent v TypeScriptu
+- práci se stavem a formuláři
+- ukládání dat do `localStorage`
+- komponentové testování
+- E2E automatizaci v Playwrightu
+- tvorbu uživatelských testovacích scénářů
+- práci s přístupnostními lokátory
+- automatické spouštění testů v GitHub Actions
 
 ## 🔮 Možná budoucí vylepšení
 
 - změna množství položky
 - filtrování podle kategorií
-- zobrazení pouze koupených nebo nekoupených položek
-- tlačítko pro smazání všech koupených položek
-- ukládání seznamu do `localStorage`
 - editace názvu položky
 - vlastní kategorie
 - tmavý režim
 - potvrzení před odstraněním položky
-- testy komponent
 
----
+## 👩‍💻 Autorka
 
-## 👩‍💻 
-
-Projekt vytvořený jako praktické cvičení při studiu Reactu a TypeScriptu.
+Projekt vytvořila [Katy Kubašková](https://github.com/katty-kub) jako praktické cvičení Reactu, TypeScriptu a automatizovaného testování.

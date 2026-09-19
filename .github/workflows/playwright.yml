@@ -1,0 +1,49 @@
+name: Automatizovane testy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  tests:
+    name: Unit a E2E testy
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Stazeni repozitare
+        uses: actions/checkout@v6
+
+      - name: Nastaveni Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - name: Instalace zavislosti
+        run: npm ci
+
+      - name: Instalace prohlizece Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Kontrola kodu
+        run: npm run lint
+
+      - name: Komponentove testy
+        run: npm test
+
+      - name: Produkcni build
+        run: npm run build
+
+      - name: E2E testy
+        run: npm run test:e2e
+
+      - name: Ulozeni Playwright reportu
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v5
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14

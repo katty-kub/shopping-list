@@ -33,21 +33,33 @@ Projekt obsahuje dvě úrovně automatizovaných testů:
 
 | Druh testů | Nástroje | Počet |
 |---|---|---:|
-| Komponentové testy | Vitest + React Testing Library | 13 |
-| E2E testy | Playwright + Chromium | 6 |
+| Komponentové testy | Vitest + React Testing Library | 5 |
+| E2E testy | Playwright + Chromium | 2 |
 
-### E2E scénáře
+Celkem projekt obsahuje **7 automatizovaných testů**.
 
-Playwright ověřuje:
+### Komponentové testy
+
+Pomocí Vitestu a React Testing Library ověřuji:
+
+1. zobrazení výchozího stavu aplikace
+2. přidání položky a aktualizaci počítadla
+3. zamítnutí prázdné položky
+4. označení položky jako koupené
+5. odstranění položky a aktualizaci počítadla
+
+Při testování používám `render`, `screen`, `userEvent` a kontroly pomocí `expect`. Prvky vyhledávám hlavně podle jejich přístupnostních rolí a názvů.
+
+### E2E testy
+
+Playwright ověřuje aplikaci ve skutečném prohlížeči Chromium.
+
+E2E testy kontrolují:
 
 1. zobrazení prázdného nákupního seznamu
-2. přidání nové položky
-3. zamítnutí prázdné položky
-4. uložení položky do vybrané kategorie
-5. označení položky jako koupené
-6. odstranění položky a aktualizaci počítadla
+2. hlavní uživatelský scénář od přidání položky přes označení jako koupené až po její odstranění
 
-Testy používají lokátory podle přístupnostních rolí a simulují skutečné uživatelské chování v prohlížeči.
+Testy používají Playwright lokátory podle přístupnostních rolí a simulují skutečné chování uživatele v prohlížeči.
 
 ## 🚀 Spuštění projektu
 
@@ -64,13 +76,15 @@ Aplikace bude dostupná na:
 http://localhost:5173
 ```
 
-## Spuštění testů
+## 🧪 Spuštění testů
 
 ### Komponentové testy
 
 ```bash
 npm test
 ```
+
+Komponentové testy spouští Vitest.
 
 ### E2E testy
 
@@ -80,7 +94,7 @@ Při prvním spuštění je potřeba nainstalovat Chromium:
 npx playwright install chromium
 ```
 
-Potom lze testy spustit příkazem:
+Potom lze Playwright testy spustit:
 
 ```bash
 npm run test:e2e
@@ -98,16 +112,25 @@ npm run test:e2e:ui
 npm run test:e2e:report
 ```
 
-## Další kontroly projektu
+## ✅ Další kontroly projektu
+
+Kontrola kódu pomocí ESLintu:
 
 ```bash
 npm run lint
+```
+
+Produkční build:
+
+```bash
 npm run build
 ```
 
 ## ⚙️ Continuous Integration
 
-GitHub Actions po každém pushi nebo pull requestu do větve `main` automaticky spustí:
+Projekt používá GitHub Actions pro automatické spouštění kontrol.
+
+Po pushi nebo pull requestu do větve `main` se automaticky spustí:
 
 - ESLint
 - komponentové testy
@@ -115,37 +138,23 @@ GitHub Actions po každém pushi nebo pull requestu do větve `main` automaticky
 - E2E testy v Chromiu
 - vytvoření Playwright HTML reportu
 
-## 📁 Struktura projektu
+Díky tomu lze rychle ověřit, jestli změna v projektu nerozbila aplikaci nebo automatizované testy.
 
-```text
-shopping-list/
-├── .github/
-│   └── workflows/
-│       └── playwright.yml
-├── e2e/
-│   └── shopping-list.spec.ts
-├── src/
-│   ├── components/
-│   ├── test/
-│   ├── types/
-│   ├── App.test.tsx
-│   └── App.tsx
-├── playwright.config.ts
-├── package.json
-├── vite.config.ts
-└── README.md
-```
+## 📚 Co jsem si na projektu procvičila
 
-## 📚 Co jsem si procvičila
-
-- tvorbu React komponent v TypeScriptu
-- práci se stavem a formuláři
+- základy práce s Reactem a TypeScriptem
+- práci s formulářem a stavem aplikace
 - ukládání dat do `localStorage`
-- komponentové testování
+- komponentové testování pomocí Vitestu a React Testing Library
+- simulaci uživatelských akcí pomocí `userEvent`
+- práci s `async` a `await`
+- pozitivní a negativní testovací scénáře
+- práci s assertions
+- hledání prvků podle přístupnostních rolí
 - E2E automatizaci v Playwrightu
-- tvorbu uživatelských testovacích scénářů
-- práci s přístupnostními lokátory
-- automatické spouštění testů v GitHub Actions
+- práci s Playwright locatory
+- izolaci jednotlivých testů
+- automatické spouštění testů pomocí GitHub Actions
 
 ## 🔮 Možná budoucí vylepšení
 
@@ -155,7 +164,13 @@ shopping-list/
 - vlastní kategorie
 - tmavý režim
 - potvrzení před odstraněním položky
+- test zachování dat v `localStorage` po obnovení stránky
 
 ## 👩‍💻 Autorka
 
-Projekt vytvořila [Katy Kubašková](https://github.com/katty-kub) jako praktické cvičení Reactu, TypeScriptu a automatizovaného testování.
+**Katy Kubašková**
+
+- GitHub: [github.com/katty-kub](https://github.com/katty-kub)
+- LinkedIn: [linkedin.com/in/katkakubaskova](https://www.linkedin.com/in/katkakubaskova)
+
+Projekt jsem vytvořila jako praktický projekt zaměřený na React, TypeScript a základy automatizovaného testování.

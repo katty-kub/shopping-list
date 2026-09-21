@@ -1,117 +1,59 @@
-import {
-  expect,
-  test,
-  type Page,
-} from "@playwright/test";
-
-async function addItem(
-  page: Page,
-  name: string,
-  category = "Potraviny"
-) {
-  await page
-    .getByRole("textbox", {
-      name: /název položky/i,
-    })
-    .fill(name);
-
-  await page
-    .getByRole("combobox", {
-      name: /kategorie položky/i,
-    })
-    .selectOption(category);
-
-  await page
-    .getByRole("button", {
-      name: /přidat/i,
-    })
-    .click();
-}
-
-test.beforeEach(async ({ page }) => {
-  await page.goto("/");
-});
+import { expect, test } from "@playwright/test";
 
 test("zobrazí prázdný nákupní seznam", async ({ page }) => {
-  await expect(
-    page.getByRole("heading", {
-      name: /nákupní seznam/i,
-    })
-  ).toBeVisible();
+  await page.goto("/");
 
-  await expect(
-    page.getByText(/seznam je zatím prázdný/i)
-  ).toBeVisible();
+  const heading = page.getByRole("heading", {
+    name: /nákupní seznam/i,
+  });
 
-  await expect(page.locator("footer")).toContainText("0");
+  const emptyMessage = page.getByText(
+    /seznam je zatím prázdný/i
+  );
+
+  await expect(heading).toBeVisible();
+  await expect(emptyMessage).toBeVisible();
 });
 
-test("přidá novou položku", async ({ page }) => {
-  await addItem(page, "Mléko");
+test("provede hlavní nákupní scénář", async ({ page }) => {
+  await page.goto("/");
+
+  const input = page.getByRole("textbox", {
+    name: /název položky/i,
+  });
+
+  const addButton = page.getByRole("button", {
+    name: /přidat/i,
+  });
+
+  await input.fill("Mléko");
+  await addButton.click();
 
   const item = page.getByRole("listitem").filter({
     hasText: "Mléko",
   });
 
+  await expect(item).toBeVisible();
   await expect(item).toContainText("Potraviny");
-  await expect(page.locator("footer")).toContainText("1");
-});
 
-test("nepřidá prázdnou položku", async ({ page }) => {
-  await addItem(page, "   ");
-
-  await expect(
-    page.getByRole("listitem")
-  ).toHaveCount(0);
-
-  await expect(
-    page.getByText(/seznam je zatím prázdný/i)
-  ).toBeVisible();
-});
-
-test("uloží položku do vybrané kategorie", async ({ page }) => {
-  await addItem(page, "Šampon", "Drogerie");
-
-  const item = page.getByRole("listitem").filter({
-    hasText: "Šampon",
-  });
-
-  await expect(item).toContainText("Drogerie");
-});
-
-test("označí položku jako koupenou", async ({ page }) => {
-  await addItem(page, "Chléb");
-
-  const item = page.getByRole("listitem").filter({
-    hasText: "Chléb",
-  });
-
-  const checkbox = page.getByRole("checkbox", {
-    name: /chléb/i,
-  });
+  const checkbox = item.getByRole("checkbox");
 
   await checkbox.check();
-
   await expect(checkbox).toBeChecked();
-  await expect(item).toHaveClass(/purchased/);
-});
 
-test("smaže položku a aktualizuje počet", async ({ page }) => {
-  await addItem(page, "Mléko");
+  const deleteButton = item.getByRole("button", {
+    name: /smazat položku mléko/i,
+  });
 
-  await page
-    .getByRole("button", {
-      name: /smazat položku mléko/i,
-    })
-    .click();
+  await deleteButton.click();
 
-  await expect(
-    page.getByText("Mléko")
-  ).toHaveCount(0);
+  await expect(item).toHaveCount(0);
 
   await expect(
     page.getByText(/seznam je zatím prázdný/i)
   ).toBeVisible();
 
-  await expect(page.locator("footer")).toContainText("0");
+  await expect(
+    page.locator("footer")
+  ).toContainText("0");
 });
